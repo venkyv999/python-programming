@@ -1,5 +1,5 @@
-x = int(input('Enter number x'))
-y = int(input('Enter number y'))
+x = int(input('Enter a number x'))
+y = int(input('Enter a number y'))
 log = 1
 res = 2
 print("X**Y =",x**y)
