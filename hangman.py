@@ -14,6 +14,8 @@ import string
 
 WORDLIST_FILENAME = "words.txt"
 guessed_list = []
+number_of_guesses = 6
+count_warnings = 0
 
 def load_words():
     """
@@ -73,9 +75,14 @@ def is_word_guessed(secret_word, letters_guessed):
       elif flag==0:
         return False      
     else:
-      print("incorrect input, enter a letter!")           
+      print("incorrect input, enter a letter!")
+      count_warnings =+ 1
+      if count_warnings>=3:
+        number_of_guesses -=1
+        print("You lost one guess!!")
+        count_warnings = 0           
           
-    return False
+    # return False
     
 
 
@@ -88,7 +95,7 @@ def get_guessed_word(secret_word, letters_guessed):
       which letters in secret_word have been guessed so far.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    
+    my_word_str = ''
     pos = is_word_guessed(secret_word,letters_guessed)
     if pos == False:
       print("Wrong guess")
@@ -97,10 +104,12 @@ def get_guessed_word(secret_word, letters_guessed):
       get_available_letters(letters_guessed)
       return False
     else:
+      my_word_str+=letters_guessed
       for pos_i in range(0,len(pos)):
           q = pos[pos_i]
           res_string[q] = letters_guessed
       print(res_string)
+      show_possible_matches(res_string,pos)
       print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
       get_available_letters(letters_guessed)
       i = int(0)
@@ -141,47 +150,47 @@ def get_available_letters(letters_guessed):
     print("\n")
     
 
-def hangman(secret_word):
-    '''
-    secret_word: string, the secret word to guess.
+# def hangman(secret_word):
+#     '''
+#     secret_word: string, the secret word to guess.
     
-    Starts up an interactive game of Hangman.
+#     Starts up an interactive game of Hangman.
     
-    * At the start of the game, let the user know how many 
-      letters the secret_word contains and how many guesses s/he starts with.
+#     * At the start of the game, let the user know how many 
+#       letters the secret_word contains and how many guesses s/he starts with.
       
-    * The user should start with 6 guesses
+#     * The user should start with 6 guesses
 
-    * Before each round, you should display to the user how many guesses
-      s/he has left and the letters that the user has not yet guessed.
+#     * Before each round, you should display to the user how many guesses
+#       s/he has left and the letters that the user has not yet guessed.
     
-    * Ask the user to supply one guess per round. Remember to make
-      sure that the user puts in a letter!
+#     * Ask the user to supply one guess per round. Remember to make
+#       sure that the user puts in a letter!
     
-    * The user should receive feedback immediately after each guess 
-      about whether their guess appears in the computer's word.
+#     * The user should receive feedback immediately after each guess 
+#       about whether their guess appears in the computer's word.
 
-    * After each guess, you should display to the user the 
-      partially guessed word so far.
+#     * After each guess, you should display to the user the 
+#       partially guessed word so far.
     
-    Follows the other limitations detailed in the problem write-up.
-    '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
+#     Follows the other limitations detailed in the problem write-up.
+#     '''
+#     # FILL IN YOUR CODE HERE AND DELETE "pass"
     
-    number_of_guesses = 6
-    while number_of_guesses>=1:
-      r =  get_guessed_word(secret_word,input("Enter letter :  "))
+#     number_of_guesses = 6
+#     while number_of_guesses>=1:
+#       r =  get_guessed_word(secret_word,input("Enter letter :  "))
       
-      if r == False:
-        number_of_guesses-=1
-        print("You have ",number_of_guesses," guesses left!!")
-        print("\n")
-      if r == 2:
-        break
+#       if r == False:
+#         number_of_guesses-=1
+#         print("You have ",number_of_guesses," guesses left!!")
+#         print("\n")
+#       if r == 2:
+#         break
 
-    if number_of_guesses<=0:
-      print("Sorry you ran out of guesses, you lost")
-      print("The secret word was: ",secret_word)
+#     if number_of_guesses<=0:
+#       print("Sorry you ran out of guesses, you lost")
+#       print("The secret word was: ",secret_word)
 
        
         
@@ -213,7 +222,7 @@ def match_with_gaps(my_word, other_word):
 
 
 
-def show_possible_matches(my_word):
+def show_possible_matches(my_word,pos):
     '''
     my_word: string with _ characters, current guess of secret word
     returns: nothing, but should print out every word in wordlist that matches my_word
@@ -223,40 +232,47 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
-
-
-def hangman_with_hints(secret_word):
-    '''
-    secret_word: string, the secret word to guess.
+    wlist = []
     
-    Starts up an interactive game of Hangman.
-    
-    * At the start of the game, let the user know how many 
-      letters the secret_word contains and how many guesses s/he starts with.
+    pos_match.extend(pos)
+    print(pos_match)
+    my_word_str = ''.join(map(str, my_word))
+    print(my_word_str)
+    for line in wordlist:
+      if len(line)==len(secret_word):
+        flag = 0
+        for pos_i in range(0,len(pos_match)):
+          q = pos_match[pos_i]
+          if line[q] == secret_word[q]:
+            flag += 1
+          
+        if flag == len(pos_match):
+          wlist.append(line)
+
+    print(wlist)
+
+
+
+
+def hangman_with_hints(secret_word,number_of_guesses):
+  
+  while number_of_guesses>=1:
+      r =  get_guessed_word(secret_word,input("Enter letter :  "))
       
-    * The user should start with 6 guesses
-    
-    * Before each round, you should display to the user how many guesses
-      s/he has left and the letters that the user has not yet guessed.
-    
-    * Ask the user to supply one guess per round. Make sure to check that the user guesses a letter
-      
-    * The user should receive feedback immediately after each guess 
-      about whether their guess appears in the computer's word.
+      if r == False:
+        number_of_guesses-=1
+        print("You have ",number_of_guesses," guesses left!!")
+        print("\n")
+      if r == 2:
+        break
 
-    * After each guess, you should display to the user the 
-      partially guessed word so far.
+  if number_of_guesses<=0:
+    print("Sorry you ran out of guesses, you lost")
+    print("The secret word was: ",secret_word)
       
-    * If the guess is the symbol *, print out all words in wordlist that
-      matches the current guessed word. 
-    
-    Follows the other limitations detailed in the problem write-up.
-    '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+  
+
+  
 
 
 
@@ -271,18 +287,26 @@ if __name__ == "__main__":
 
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
-    res_string = []
-    secret_word = choose_word(wordlist)
-    print("guess the secret word which is ",len(secret_word),"letter long")
-    for n in range(0,len(secret_word)):
-      res_string.append('_')
-    print(res_string)
-    hangman(secret_word)
+    # res_string = []
+    # secret_word = choose_word(wordlist)
+    # print("guess the secret word which is ",len(secret_word),"letter long")
+    # for n in range(0,len(secret_word)):
+    #   res_string.append('_')
+    # print(res_string)
+    # hangman(secret_word)
+
 
 ###############
     
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
-    
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
+    res_string = []
+    pos_match = []
+  
+    secret_word = choose_word(wordlist)
+    print(secret_word)
+    print("guess the secret word which is ",len(secret_word),"letter long")
+    for n in range(0,len(secret_word)):
+      res_string.append('_')
+    print(res_string)
+    hangman_with_hints(secret_word,number_of_guesses)
