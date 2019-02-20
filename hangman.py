@@ -65,24 +65,19 @@ def is_word_guessed(secret_word, letters_guessed):
     # FILL IN YOUR CODE HERE AND DELETE "pass"
     let_pos = []
     flag = 0
-    if letters_guessed.isalpha():
-      for i in range(0,len(secret_word)):
-          if letters_guessed==secret_word[i]:
-            let_pos.append(i)
-            flag = 1
-      if flag==1:
-        return let_pos
-      elif flag==0:
-        return False      
-    else:
-      print("incorrect input, enter a letter!")
-      count_warnings =+ 1
-      if count_warnings>=3:
-        number_of_guesses -=1
-        print("You lost one guess!!")
-        count_warnings = 0           
+    for i in range(0,len(secret_word)):
+      if letters_guessed==secret_word[i]:
+        let_pos.append(i)
+        flag = 1
+    if flag==1:
+      return let_pos
+    elif flag==0:
+      return False
+            
+    
+               
           
-    # return False
+    return False
     
 
 
@@ -235,7 +230,7 @@ def show_possible_matches(my_word,pos):
     wlist = []
     
     pos_match.extend(pos)
-    print(pos_match)
+    # print(pos_match)
     my_word_str = ''.join(map(str, my_word))
     print(my_word_str)
     for line in wordlist:
@@ -248,19 +243,39 @@ def show_possible_matches(my_word,pos):
           
         if flag == len(pos_match):
           wlist.append(line)
-
+    print("------------Lets make it bit easy for you!! The letter can be of one of the following!!------\n")
     print(wlist)
 
 
 
 
 def hangman_with_hints(secret_word,number_of_guesses):
-  
+  count_warnings = 0
+  number_of_guesses = 6
+  isvowel = False
+  vowels = 'aeiou'
   while number_of_guesses>=1:
-      r =  get_guessed_word(secret_word,input("Enter letter :  "))
-      
+      word_input = input("Enter letter: ")
+      if word_input in vowels:
+        isvowel = True
+      else:
+        isvowel = False
+      if not word_input.isalpha():
+        print("incorrect input, enter a letter!")
+        count_warnings += 1
+        if count_warnings>=3:
+          number_of_guesses -= 1
+          print("You lost one guess!!")
+          print("You have ",number_of_guesses," guesses left!!")
+          count_warnings = 0  
+        continue
+      r =  get_guessed_word(secret_word,word_input)
       if r == False:
-        number_of_guesses-=1
+        if isvowel == True:
+          number_of_guesses-=2
+          print("You entered wrong vowel")
+        else:
+          number_of_guesses-=1
         print("You have ",number_of_guesses," guesses left!!")
         print("\n")
       if r == 2:
