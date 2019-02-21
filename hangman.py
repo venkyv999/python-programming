@@ -17,6 +17,7 @@ guessed_list = []
 number_of_guesses = 6
 count_warnings = 0
 
+
 def load_words():
     """
     Returns a list of valid words. Words are strings of lowercase letters.
@@ -82,7 +83,7 @@ def is_word_guessed(secret_word, letters_guessed):
 
 
 
-def get_guessed_word(secret_word, letters_guessed):
+def get_guessed_word(secret_word, letters_guessed,wlist):
     '''
     secret_word: string, the word the user is guessing
     letters_guessed: list (of letters), which letters have been guessed so far
@@ -91,11 +92,12 @@ def get_guessed_word(secret_word, letters_guessed):
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
     my_word_str = ''
+    
     pos = is_word_guessed(secret_word,letters_guessed)
     if pos == False:
       print("Wrong guess")
       print(res_string)
-      print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
+      print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-\n")
       get_available_letters(letters_guessed)
       return False
     else:
@@ -103,10 +105,14 @@ def get_guessed_word(secret_word, letters_guessed):
       for pos_i in range(0,len(pos)):
           q = pos[pos_i]
           res_string[q] = letters_guessed
+      print("...Good guess...")
       print(res_string)
-      show_possible_matches(res_string,pos)
-      print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
+      global no_letters
+      no_letters += 1
+      show_possible_matches(res_string,pos,wlist)
+      print("\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-\n")
       get_available_letters(letters_guessed)
+      
       i = int(0)
       count = int(0)
       for char in secret_word:
@@ -114,13 +120,13 @@ def get_guessed_word(secret_word, letters_guessed):
           count+=1
           i+=1
       if count == len(secret_word):
-        print("Congratulations!!! You won!!") 
-        return 2
+        print("Congratulations!!! You won!!")
+        return no_letters
       return True
     # elif pos<0:
     #   return False
     
-
+no_letters = 0
     
     
 
@@ -217,7 +223,7 @@ def match_with_gaps(my_word, other_word):
 
 
 
-def show_possible_matches(my_word,pos):
+def show_possible_matches(my_word,pos,wlist):
     '''
     my_word: string with _ characters, current guess of secret word
     returns: nothing, but should print out every word in wordlist that matches my_word
@@ -227,12 +233,12 @@ def show_possible_matches(my_word,pos):
              that has already been revealed.
 
     '''
-    wlist = []
+    
     
     pos_match.extend(pos)
     # print(pos_match)
     my_word_str = ''.join(map(str, my_word))
-    print(my_word_str)
+    #print(my_word_str)
     for line in wordlist:
       if len(line)==len(secret_word):
         flag = 0
@@ -243,19 +249,44 @@ def show_possible_matches(my_word,pos):
           
         if flag == len(pos_match):
           wlist.append(line)
-    print("------------Lets make it bit easy for you!! The letter can be of one of the following!!------\n")
-    print(wlist)
+    #print("------------Lets make it bit easy for you!! The word can be of one of the following!!------\n")
+    # print(wlist)
 
 
 
 
 def hangman_with_hints(secret_word,number_of_guesses):
+  
   count_warnings = 0
+  wlist = []
   number_of_guesses = 6
+  number_of_warnings = 3
+  letter_guessed = ''
   isvowel = False
   vowels = 'aeiou'
   while number_of_guesses>=1:
+      print("You have ",number_of_guesses," guesses left!!")
+      print("You have ",number_of_warnings," warnings left!!")
+      print("...Guess the letter...")
+      print("if you want hint then enter *")
       word_input = input("Enter letter: ")
+      if word_input == '*':
+          print("Ok, Lets make it bit easy for you!")
+          print(wlist)
+          wlist.clear()
+          continue
+      if word_input not in letter_guessed:
+        letter_guessed+=word_input
+        #print(letter_guessed)
+      elif word_input in letter_guessed:
+        print("Warning!! You entered a letter repeat!!")
+        count_warnings +=1
+        number_of_warnings -=1
+        print("You have lost a warnings!!")
+        if count_warnings >= 3:
+          number_of_guesses -= 1
+          print("You lost one guess!!")
+          print("You have ",number_of_guesses," guesses left!!")
       if word_input in vowels:
         isvowel = True
       else:
@@ -263,22 +294,25 @@ def hangman_with_hints(secret_word,number_of_guesses):
       if not word_input.isalpha():
         print("incorrect input, enter a letter!")
         count_warnings += 1
+        number_of_warnings -=1
+        print("You lost a warning!!")
         if count_warnings>=3:
           number_of_guesses -= 1
           print("You lost one guess!!")
           print("You have ",number_of_guesses," guesses left!!")
           count_warnings = 0  
         continue
-      r =  get_guessed_word(secret_word,word_input)
+      r =  get_guessed_word(secret_word,word_input,wlist)
       if r == False:
         if isvowel == True:
           number_of_guesses-=2
           print("You entered wrong vowel")
         else:
           number_of_guesses-=1
-        print("You have ",number_of_guesses," guesses left!!")
+        # print("You have ",number_of_guesses," guesses left!!")
         print("\n")
-      if r == 2:
+      if r >=2:
+        print("Your score is :",r*number_of_guesses)
         break
 
   if number_of_guesses<=0:
@@ -317,10 +351,12 @@ if __name__ == "__main__":
     # uncomment the following two lines. 
     res_string = []
     pos_match = []
-  
+    
     secret_word = choose_word(wordlist)
-    print(secret_word)
-    print("guess the secret word which is ",len(secret_word),"letter long")
+    #print(secret_word)
+    print("------------------Welcome to the HANGMAN game!!-----------------")
+    print("Guess the secret word which is ",len(secret_word),"letter long")
+    #print("You have 6 guesses left!\nYou have 3 warnings left!\n")
     for n in range(0,len(secret_word)):
       res_string.append('_')
     print(res_string)
