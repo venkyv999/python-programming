@@ -288,14 +288,14 @@ def hangman_with_hints(secret_word):
     AllGuessedLetters = []
     vowels = 'aeiou'
     success = False
-    print("----------Welcome to the HANGMAN game!!----------")
+    print("----------Welcome to the HANGMAN WITH HINTS game!!----------")
     print("\n**In this game you have to guess a word which is",len(secret_word),"letter long.")
     
     while(NumberOfGuesses>0):
         print("You have",NumberOfGuesses,"guesses left !")
         print("You have",NumberOfWarnings,"warnings left !")
         print("Available letters are: ",get_available_letters(AllGuessedLetters))
-        letter = input("Enter the guessed letter : ")
+        letter = input("Enter the letter (or for hints press * ): ")
         if letter == '*':
           print("Ok. Lets make it easy for you. Following are some hints.\n")
           ResultString = get_guessed_word(secret_word, letters_guessed)
